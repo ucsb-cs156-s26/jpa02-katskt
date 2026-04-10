@@ -1,6 +1,7 @@
 package edu.ucsb.cs156.spring.hello;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,36 +32,37 @@ public class HelloControllerTest {
         MvcResult response = mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
         String actualContent = response.getResponse().getContentAsString();
-        String expectedContent =  """
-            <h1>Greetings from Spring Boot!</h1>
-            <p>This is a simple example of a Spring Boot application.</p>
-            <p><a href="/info">Developer Info</a></p>
-            """;
+        String expectedContent = """
+                <h1>Greetings from Spring Boot!</h1>
+                <p>This is a simple example of a Spring Boot application.</p>
+                <p><a href="/info">Developer Info</a></p>
+                """;
         assertEquals(expectedContent, actualContent);
     }
 
     @Test
     public void getInfo_has_developer_info_header() throws Exception {
-         MvcResult response = mvc.perform(MockMvcRequestBuilders.get("/info").accept(MediaType.APPLICATION_JSON))
+        MvcResult response = mvc.perform(MockMvcRequestBuilders.get("/info").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
         String actualContent = response.getResponse().getContentAsString();
         String expectedContent = "<h1>Developer Info</h1>";
 
-        assertTrue(actualContent.contains(expectedContent),String.format("Expected content to contain: [%s]\nActual content: [%s]", expectedContent, actualContent));
+        assertTrue(actualContent.contains(expectedContent), String
+                .format("Expected content to contain: [%s]\nActual content: [%s]", expectedContent, actualContent));
     }
-
 
     @Test
     public void get_team_returns_team_object() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper(); // maps between Java objects and JSON objects
-         MvcResult response = mvc.perform(MockMvcRequestBuilders.get("/team").accept(MediaType.APPLICATION_JSON))
+        MvcResult response = mvc.perform(MockMvcRequestBuilders.get("/team").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
         String actualContent = response.getResponse().getContentAsString();
         Team teamReturned = objectMapper.readValue(actualContent, Team.class);
         Team expectedTeam = Developer.getTeam();
+        Team poop = new Team("Poop");
+        assertNotEquals(expectedTeam, poop);
         assertEquals(expectedTeam, teamReturned);
     }
-
 
     // TODO: Add additional tests as needed to get to 100% jacoco line coverage, and
     // 100% mutation coverage (all mutants timed out or killed)
